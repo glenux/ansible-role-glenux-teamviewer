@@ -1,0 +1,33 @@
+---
+# tasks file for glenux.teamviewer
+- name: Install teamviewer auto-disabler script
+  ansible.builtin.copy: 
+    src: usr.local.sbin.teamviewer-autodisable
+    dest: /usr/local/sbin/teamviewer-autodisable
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Install teamviewer fix in apt
+  ansible.builtin.copy: 
+    src: etc.apt.apt.conf.d.99-teamviewer-autodisable
+    dest: /etc/apt/apt.conf.d/99-teamviewer-autodisable
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Download teamviewer 
+  get_url:
+    url: https://download.teamviewer.com/download/linux/teamviewer_amd64.deb
+    dest: /usr/src/teamviewer_amd64.deb
+
+- name: Install teamviewer 
+  apt:
+    deb: /usr/src/teamviewer_amd64.deb
+    state: present
+
+- name: Restard teamviewer 
+  service:
+    name: teamviewerd
+    state: restarted
+

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+set -u
+
+if ! [ -f /usr/bin/teamviewer ]; then
+  # nothing to do
+  exit 0
+fi 
+
+echo "teamviewer-fix: moving bad service definition"
+if [ -f /etc/systemd/system/teamviewerd.service ]; then
+  mv /etc/systemd/system/teamviewerd.service /lib/systemd/system/teamviewerd.service
+  ln -s /lib/systemd/system/teamviewerd.service /etc/systemd/system/teamviewerd.service
+fi
+
+echo "teamviewer-fix: stopping, disabling & masking service"
+systemctl stop teamviewerd
+systemctl disable teamviewerd
+systemctl mask teamviewerd
+
+echo "teamviewer-fix: done"
+
+exit 0
